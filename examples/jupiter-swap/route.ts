@@ -4,13 +4,13 @@ import {
   actionsSpecOpenApiGetResponse,
   actionsSpecOpenApiPostResponse,
 } from '../openapi';
-import jupiterApi from '../../api/jupiter-api';
 import {
-  ActionError,
-  ActionGetResponse,
-  ActionPostRequest,
-  ActionPostResponse,
-} from '@solana/actions';
+  ActionsSpecErrorResponse,
+  ActionsSpecGetResponse,
+  ActionsSpecPostRequestBody,
+  ActionsSpecPostResponse,
+} from '../../spec/actions-spec';
+import jupiterApi from './jupiter-api';
 
 export const JUPITER_LOGO =
   'https://ucarecdn.com/09c80208-f27c-45dd-b716-75e1e55832c4/-/preview/1000x981/-/quality/smart/-/format/auto/';
@@ -63,11 +63,11 @@ app.openapi(
         error: {
           message: `Token metadata not found.`,
         },
-      } satisfies ActionGetResponse);
+      } satisfies ActionsSpecGetResponse);
     }
 
     const amountParameterName = 'amount';
-    const response: ActionGetResponse = {
+    const response: ActionsSpecGetResponse = {
       icon: JUPITER_LOGO,
       label: `Buy ${outputTokenMeta.symbol}`,
       title: `Buy ${outputTokenMeta.symbol}`,
@@ -145,10 +145,10 @@ app.openapi(
         error: {
           message: `Token metadata not found.`,
         },
-      } satisfies ActionGetResponse);
+      } satisfies ActionsSpecGetResponse);
     }
 
-    const response: ActionGetResponse = {
+    const response: ActionsSpecGetResponse = {
       icon: JUPITER_LOGO,
       label: `Buy ${outputTokenMeta.symbol}`,
       title: `Buy ${outputTokenMeta.symbol} with ${inputTokenMeta.symbol}`,
@@ -194,7 +194,7 @@ app.openapi(
   async (c) => {
     const tokenPair = c.req.param('tokenPair');
     const amount = c.req.param('amount') ?? DEFAULT_SWAP_AMOUNT_USD.toString();
-    const { account } = (await c.req.json()) as ActionPostRequest;
+    const { account } = (await c.req.json()) as ActionsSpecPostRequestBody;
 
     const [inputToken, outputToken] = tokenPair.split('-');
     const [inputTokenMeta, outputTokenMeta] = await Promise.all([
@@ -206,7 +206,7 @@ app.openapi(
       return Response.json(
         {
           message: `Token metadata not found.`,
-        } satisfies ActionError,
+        } satisfies ActionsSpecErrorResponse,
         {
           status: 422,
         },
@@ -220,7 +220,7 @@ app.openapi(
       return Response.json(
         {
           message: `Failed to get price for ${inputTokenMeta.symbol}.`,
-        } satisfies ActionError,
+        } satisfies ActionsSpecErrorResponse,
         {
           status: 422,
         },
@@ -252,9 +252,10 @@ app.openapi(
         prioritizationFeeLamports: 'auto',
       },
     });
-    const response: ActionPostResponse = {
+    const response: ActionsSpecPostResponse = {
       transaction: swapResponse.swapTransaction,
     };
+    console.log('response',response)
     return c.json(response);
   },
 );

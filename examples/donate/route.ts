@@ -10,8 +10,12 @@ import {
   actionsSpecOpenApiGetResponse,
   actionsSpecOpenApiPostResponse,
 } from '../openapi';
-import { prepareTransaction } from '../../shared/transaction-utils';
-import { ActionGetResponse, ActionPostRequest, ActionPostResponse } from '@solana/actions';
+import {
+  ActionsSpecGetResponse,
+  ActionsSpecPostRequestBody,
+  ActionsSpecPostResponse,
+} from '../../spec/actions-spec';
+import { prepareTransaction } from '../transaction-utils';
 
 const DONATION_DESTINATION_WALLET =
   '3h4AtoLTh3bWwaLhdtgQtcC3a3Tokb8NJbtqR9rhp7p6';
@@ -30,7 +34,7 @@ app.openapi(
   (c) => {
     const { icon, title, description } = getDonateInfo();
     const amountParameterName = 'amount';
-    const response: ActionGetResponse = {
+    const response: ActionsSpecGetResponse = {
       icon,
       label: `${DEFAULT_DONATION_AMOUNT_SOL} SOL`,
       title,
@@ -81,7 +85,7 @@ app.openapi(
   (c) => {
     const amount = c.req.param('amount');
     const { icon, title, description } = getDonateInfo();
-    const response: ActionGetResponse = {
+    const response: ActionsSpecGetResponse = {
       icon,
       label: `${amount} SOL`,
       title,
@@ -118,7 +122,7 @@ app.openapi(
   async (c) => {
     const amount =
       c.req.param('amount') ?? DEFAULT_DONATION_AMOUNT_SOL.toString();
-    const { account } = (await c.req.json()) as ActionPostRequest;
+    const { account } = (await c.req.json()) as ActionsSpecPostRequestBody;
 
     const parsedAmount = parseFloat(amount);
     const transaction = await prepareDonateTransaction(
@@ -126,7 +130,7 @@ app.openapi(
       new PublicKey(DONATION_DESTINATION_WALLET),
       parsedAmount * LAMPORTS_PER_SOL,
     );
-    const response: ActionPostResponse = {
+    const response: ActionsSpecPostResponse = {
       transaction: Buffer.from(transaction.serialize()).toString('base64'),
     };
     return c.json(response, 200);
@@ -134,7 +138,7 @@ app.openapi(
 );
 
 function getDonateInfo(): Pick<
-  ActionGetResponse,
+  ActionsSpecGetResponse,
   'icon' | 'title' | 'description'
 > {
   const icon =

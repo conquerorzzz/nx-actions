@@ -1,11 +1,8 @@
+/* eslint-disable */
 import { serve } from '@hono/node-server';
 import donate from './donate/route';
 import jupiterSwap from './jupiter-swap/route';
-import heliusStake from './helius/stake/route';
-import sanctumTrade from './sanctum/trade/route';
-import tensorBuyFloor from './tensor/buy-floor/route';
-import tensorBidNft from './tensor/bid-nft/route';
-import meteoraSwap from './meteora/swap/route';
+import nxlending from './nxfi-lending/route';
 import { cors } from 'hono/cors';
 import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
@@ -14,13 +11,9 @@ const app = new OpenAPIHono();
 app.use('/*', cors());
 
 // <--Actions-->
-app.route('/api/donate', donate);
+// app.route('/api/donate', donate);
 app.route('/api/jupiter/swap', jupiterSwap);
-app.route('/api/helius/stake', heliusStake);
-app.route('/api/sanctum/trade', sanctumTrade);
-app.route('/api/tensor/buy-floor', tensorBuyFloor);
-app.route('/api/tensor/bid-nft', tensorBidNft);
-app.route('/api/meteora/swap', meteoraSwap);
+app.route('/api/nxlending/supply', nxlending);
 // </--Actions-->
 
 app.doc('/doc', {
